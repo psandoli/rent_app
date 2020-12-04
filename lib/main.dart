@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:rent_app/pages/teste.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,12 +16,55 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Aluguel de Imóveis',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      home: Scaffold(
+        appBar: AppBar(title: Text('Acessar', style: TextStyle(fontSize: 23, color: Colors.black,),),
+        centerTitle: true,
+        elevation: 10,
+        flexibleSpace: Container(
+          height: double.infinity,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0xFF26646E),
+                Color(0xFF53D2EC),
+              ], 
+              stops: [0.2, 1.0],
+              )
+            ),
+          ),
+        ),
+        resizeToAvoidBottomPadding: false,
+        body: SafeArea(child: MyHomePage(),
+        ),
+      drawer: _drawer(),
       ),
-      home: MyHomePage(title: 'Login'),
     );
   }
+}
+
+Widget _drawer(){
+  return Drawer(
+    child: ListView(
+      children: <Widget>[
+        DrawerHeader(
+          child: Text('Menu'),
+          decoration: BoxDecoration(
+            color: Colors.cyan,
+          ),
+        ),
+        /*ListTile(
+          title: Text('Imóveis'),
+          leading: Icon(Icons.house_rounded),
+          //onTap: () => Navigator.pop(context),
+        ),
+        ListTile(
+          title: Text('Meu perfil'),
+          leading: Icon(Icons.account_circle),
+        )*/
+      ],
+    ),
+  );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -31,13 +79,64 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Trajan Pro', fontSize: 20.0);
 
+	TextEditingController email=new TextEditingController();
+	TextEditingController senha=new TextEditingController();
+
+
+	Future senddata() async {
+    var url = "https://192.168.0.112/flutter/autenticar.php";
+	  var response = await http.post(url, 
+      body: {
+	      "email": email.text,
+	      "senha": senha.text,
+	    }
+    );
+
+    var data = json.decode(response.body);
+    
+    if (data == "Erro!"){
+      Fluttertoast.showToast(
+        msg: "Cadastro inexistente",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "Login OK",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+      Navigator.push(context, MaterialPageRoute(builder:(context) => Teste()));
+    } /*else {
+      Fluttertoast.showToast(
+        msg: "Usuário ou senha incorreto",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+      );
+    }*/
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final emailField = TextField(
-      obscureText: true,
       style: style,
+      keyboardType: TextInputType.emailAddress,
+      controller: email,
       decoration: InputDecoration(
+          icon: Icon(Icons.email),
           fillColor: Color(0xFFFFFFFF),
           filled: true,
           contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
@@ -49,7 +148,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final passwordField = TextField(
       obscureText: true,
       style: style,
+      controller: senha,
       decoration: InputDecoration(
+        icon: Icon(Icons.lock),
         fillColor: Color(0xFFFFFFFF),
         filled: true,
         contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
@@ -58,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
         OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
     );
 
+
     final loginButon = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(5.0),
@@ -65,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
-        onPressed: () {},
+        onPressed: () {senddata();},
         child: Text("ENTRAR",
             textAlign: TextAlign.center,
             style: style.copyWith(
@@ -99,9 +201,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       SizedBox(
                         height: 155.0,
                         child: Image.asset(
-                          "logo.png",
+                          "assets/logo.png",
                           fit: BoxFit.contain,
                         ),
+                      ),
+                      SizedBox(
+                        height: 35.0,
+                        child: Text('Bem-vindo', style: TextStyle(fontSize: 30, color: Colors.white38),
+                      )
                       ),
                       SizedBox(height: 45.0),
                       emailField,
