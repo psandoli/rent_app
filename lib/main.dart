@@ -17,33 +17,40 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Aluguel de Imóveis',
       home: Scaffold(
-        appBar: AppBar(title: Text('Acessar', style: TextStyle(fontSize: 23, color: Colors.black,),),
-        centerTitle: true,
-        elevation: 10,
-        flexibleSpace: Container(
-          height: double.infinity,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
+        appBar: AppBar(
+          title: Text(
+            'Acessar',
+            style: TextStyle(
+              fontSize: 23,
+              color: Colors.black,
+            ),
+          ),
+          centerTitle: true,
+          elevation: 10,
+          flexibleSpace: Container(
+            height: double.infinity,
+            width: double.infinity,
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
               colors: [
                 Color(0xFF26646E),
                 Color(0xFF53D2EC),
-              ], 
+              ],
               stops: [0.2, 1.0],
-              )
-            ),
+            )),
           ),
         ),
         resizeToAvoidBottomPadding: false,
-        body: SafeArea(child: MyHomePage(),
+        body: SafeArea(
+          child: MyHomePage(),
         ),
-      drawer: _drawer(),
+        drawer: _drawer(),
       ),
     );
   }
 }
 
-Widget _drawer(){
+Widget _drawer() {
   return Drawer(
     child: ListView(
       children: <Widget>[
@@ -79,43 +86,42 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   TextStyle style = TextStyle(fontFamily: 'Trajan Pro', fontSize: 20.0);
 
-	TextEditingController email=new TextEditingController();
-	TextEditingController senha=new TextEditingController();
+  TextEditingController email = new TextEditingController();
+  TextEditingController senha = new TextEditingController();
 
+  Future senddata() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Teste()));
 
-	Future senddata() async {
-    var url = "https://192.168.0.112/flutter/autenticar.php";
-	  var response = await http.post(url, 
-      body: {
-	      "email": email.text,
-	      "senha": senha.text,
-	    }
-    );
+    /*var url = "https://192.168.0.112/flutter/autenticar.php";
+    var response = await http.post(url, body: {
+      "email": "admin@admin.com",
+      "senha": "12345",
+    });
 
+    print(response.body);
     var data = json.decode(response.body);
-    
-    if (data == "Erro!"){
+
+    if (data == "Erro!") {
       Fluttertoast.showToast(
-        msg: "Cadastro inexistente",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
+          msg: "Cadastro inexistente",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
     } else {
       Fluttertoast.showToast(
-        msg: "Login OK",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
-      Navigator.push(context, MaterialPageRoute(builder:(context) => Teste()));
-    } /*else {
+          msg: "Login OK",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Teste()));
+    }
+    /*else {
       Fluttertoast.showToast(
         msg: "Usuário ou senha incorreto",
         toastLength: Toast.LENGTH_SHORT,
@@ -125,12 +131,11 @@ class _MyHomePageState extends State<MyHomePage> {
         textColor: Colors.white,
         fontSize: 16.0
       );
-    }*/
+    }*/*/
   }
 
   @override
   Widget build(BuildContext context) {
-
     final emailField = TextField(
       style: style,
       keyboardType: TextInputType.emailAddress,
@@ -141,8 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
           filled: true,
           contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
           hintText: "Email",
-          border:
-          OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
     );
 
     final passwordField = TextField(
@@ -150,15 +154,13 @@ class _MyHomePageState extends State<MyHomePage> {
       style: style,
       controller: senha,
       decoration: InputDecoration(
-        icon: Icon(Icons.lock),
-        fillColor: Color(0xFFFFFFFF),
-        filled: true,
-        contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-        hintText: "Senha",
-        border:
-        OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+          icon: Icon(Icons.lock),
+          fillColor: Color(0xFFFFFFFF),
+          filled: true,
+          contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+          hintText: "Senha",
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
     );
-
 
     final loginButon = Material(
       elevation: 5.0,
@@ -167,7 +169,9 @@ class _MyHomePageState extends State<MyHomePage> {
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
         padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
-        onPressed: () {senddata();},
+        onPressed: () {
+          senddata();
+        },
         child: Text("ENTRAR",
             textAlign: TextAlign.center,
             style: style.copyWith(
@@ -188,46 +192,46 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: SingleChildScrollView(
-            child: Center(
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(36.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 155.0,
-                        child: Image.asset(
-                          "assets/logo.png",
-                          fit: BoxFit.contain,
+            backgroundColor: Colors.transparent,
+            body: SingleChildScrollView(
+              child: Center(
+                child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(36.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          height: 155.0,
+                          child: Image.asset(
+                            "assets/logo.png",
+                            fit: BoxFit.contain,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 35.0,
-                        child: Text('Bem-vindo', style: TextStyle(fontSize: 30, color: Colors.white38),
-                      )
-                      ),
-                      SizedBox(height: 45.0),
-                      emailField,
-                      SizedBox(height: 25.0),
-                      passwordField,
-                      SizedBox(
-                        height: 35.0,
-                      ),
-                      loginButon,
-                      SizedBox(
-                        height: 15.0,
-                      ),
-                    ],
+                        SizedBox(
+                            height: 35.0,
+                            child: Text(
+                              'Bem-vindo',
+                              style: TextStyle(
+                                  fontSize: 30, color: Colors.white38),
+                            )),
+                        SizedBox(height: 45.0),
+                        emailField,
+                        SizedBox(height: 25.0),
+                        passwordField,
+                        SizedBox(
+                          height: 35.0,
+                        ),
+                        loginButon,
+                        SizedBox(
+                          height: 15.0,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          )
-      )
-    );
+            )));
   }
 }
