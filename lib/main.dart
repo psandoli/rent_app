@@ -216,16 +216,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               style: TextStyle(
                                   fontSize: 30, color: Colors.white38),
                             )),
-                        SizedBox(height: 45.0),
-                        emailField,
-                        SizedBox(height: 25.0),
-                        passwordField,
-                        SizedBox(
-                          height: 35.0,
-                        ),
-                        loginButon,
-                        SizedBox(
-                          height: 15.0,
+                        DefaultTabController(
+                          length: 2,
+                          child: TabBar(
+                            tabs: [
+                              Tab(text: "Entre"),
+                              Tab(text: "Cadastre-se")
+                            ],
+                          ),
                         ),
                       ],
                     ),
