@@ -1,19 +1,28 @@
 <?php 
 include "conexao.php";
 // REGISTER USER
-
   
-    $name = mysqli_real_escape_string($connect, $_POST['nome']);
-    $email = mysqli_real_escape_string($connect, $_POST['email']);
-    $pass = mysqli_real_escape_string($connect, $_POST['senha']);
-    $type = mysqli_real_escape_string($connect, $_POST['tipo']);  
+    $nome = $_POST['nome'];
+    $email = $_POST['email'];
+    $senha =$_POST['senha'];
+    $tipo = $_POST['tipo'];  
  
-        $query = "INSERT INTO login (nome, email, senha, tipo)
-  			  VALUES('$name', '$email', '$pass', '$type')";
-    $results = mysqli_query($connect, $query);
-    if($results>0)
-    {
-        echo "Login ok";
+        $query = "SELECT * FROM login WHERE email = '$email'";
+        $results = mysqli_query($connect, $query);
+        $count = mysqli_num_rows($results);
+
+    if($count != 1){
+        $query = "INSERT INTO login (id, nome, email, senha, tipo)
+                VALUES(null, '$nome', '$email', '$senha', '$tipo')";
+        $results = mysqli_query($connect, $query);
+        $data = mysqli_fetch_array($results);
+
+        if ($data[0] > 1){
+            echo json_encode("true");
+        } else {
+            echo json_encode("false");
+        }
+    } else {
+        echo json_encode("Conta já existe.");
     }
-    
 ?>

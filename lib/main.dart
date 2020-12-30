@@ -88,14 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   TextEditingController email = new TextEditingController();
   TextEditingController senha = new TextEditingController();
+  TextEditingController nome = new TextEditingController();
+
+  String dropdownValue = 'Locatário';
+  int dropdownNumber = 0;
+  var tipos = ['Locatário', 'Locador'];
+
+  bool signin = true;
 
   Future senddata() async {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Teste()));
-
-    /*var url = "https://192.168.0.112/flutter/autenticar.php";
+    var url = "http://192.168.0.113/flutter/autenticar.php";
     var response = await http.post(url, body: {
-      "email": "admin@admin.com",
-      "senha": "12345",
+      "email": email.text,
+      "senha": senha.text,
     });
 
     print(response.body);
@@ -110,7 +115,16 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-    } else {
+    } else if (email.text == "" || senha.text == "") {
+      Fluttertoast.showToast(
+          msg: "Por favor preencha os campos",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } else if (data == "Sucesso!") {
       Fluttertoast.showToast(
           msg: "Login OK",
           toastLength: Toast.LENGTH_SHORT,
@@ -119,66 +133,80 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Teste()));
-    }
-    /*else {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+    } else {
       Fluttertoast.showToast(
-        msg: "Usuário ou senha incorreto",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0
-      );
-    }*/*/
+          msg: "Usuário ou senha incorreto",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  Future registerUser() async {
+    var url = "http://192.168.0.113/flutter/cadastrar.php";
+    var response = await http.post(url, body: {
+      "nome": nome.text,
+      "email": email.text,
+      "senha": senha.text,
+      "tipo": dropdownNumber,
+    });
+
+    print(response.body);
+    var data = json.decode(response.body);
+
+    if (email.text == "" || senha.text == "" || nome.text == ""){
+      Fluttertoast.showToast(
+          msg: "Por favor preencha os campos",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } else if (data == "Conta já existe.") {
+      Fluttertoast.showToast(
+          msg: "Conta já existe",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    } else if (data == "true") {
+        Fluttertoast.showToast(
+          msg: "Conta criada.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      } else if (data == "false"){
+        Fluttertoast.showToast(
+          msg: "Erro.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      }
+    }
+
+  @override
+  void initState() {
+    super.initState();
+    nome = new TextEditingController();
+    email = new TextEditingController();
+    senha = new TextEditingController();
   }
 
   @override
   Widget build(BuildContext context) {
-    final emailField = TextField(
-      style: style,
-      keyboardType: TextInputType.emailAddress,
-      controller: email,
-      decoration: InputDecoration(
-          icon: Icon(Icons.email),
-          fillColor: Color(0xFFFFFFFF),
-          filled: true,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-          hintText: "Email",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
-    );
-
-    final passwordField = TextField(
-      obscureText: true,
-      style: style,
-      controller: senha,
-      decoration: InputDecoration(
-          icon: Icon(Icons.lock),
-          fillColor: Color(0xFFFFFFFF),
-          filled: true,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
-          hintText: "Senha",
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
-    );
-
-    final loginButon = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(5.0),
-      color: Color(0xFFFFE3B3),
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
-        onPressed: () {
-          senddata();
-        },
-        child: Text("ENTRAR",
-            textAlign: TextAlign.center,
-            style: style.copyWith(
-                color: Color(0xFF26648E), fontWeight: FontWeight.bold)),
-      ),
-    );
-
     return Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -216,20 +244,203 @@ class _MyHomePageState extends State<MyHomePage> {
                               style: TextStyle(
                                   fontSize: 30, color: Colors.white38),
                             )),
-                        DefaultTabController(
-                          length: 2,
-                          child: TabBar(
-                            tabs: [
-                              Tab(text: "Entre"),
-                              Tab(text: "Cadastre-se")
-                            ],
-                          ),
-                        ),
+                        SizedBox(height: 25.0),
+                        boxUi(),
                       ],
                     ),
                   ),
                 ),
               ),
             )));
+  }
+
+  void changeState() {
+    if (signin) {
+      setState(() {
+        signin = false;
+      });
+    } else {
+      setState(() {
+        signin = true;
+      });
+    }
+  }
+
+  Widget boxUi() {
+    return Card(
+      elevation: 10.0,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                FlatButton(
+                  onPressed: () => changeState(),
+                  child: Text(
+                    "Entre",
+                    style: TextStyle(
+                        color: signin == true ? Colors.yellow : Colors.grey,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                FlatButton(
+                    onPressed: () => changeState(),
+                    child: Text(
+                      "Cadastre-se",
+                      style: TextStyle(
+                          color: signin != true ? Colors.yellow : Colors.grey,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold),
+                    ))
+              ],
+            ),
+            signin == true ? signInUi() : signUpUi(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget signInUi() {
+    return Column(
+      children: <Widget>[
+        SizedBox(height: 15.0),
+        TextField(
+          style: style,
+          keyboardType: TextInputType.emailAddress,
+          controller: email,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.email),
+              fillColor: Color(0xFFFFFFFF),
+              filled: true,
+              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+              hintText: "Email",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+        ),
+        SizedBox(height: 25.0),
+        TextField(
+          obscureText: true,
+          style: style,
+          controller: senha,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.lock),
+              fillColor: Color(0xFFFFFFFF),
+              filled: true,
+              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+              hintText: "Senha",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+        ),
+        SizedBox(height: 25.0),
+        Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(5.0),
+          color: Color(0xFFFFE3B3),
+          child: MaterialButton(
+            minWidth: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
+            onPressed: () {
+              senddata();
+            },
+            child: Text("ENTRAR",
+                textAlign: TextAlign.center,
+                style: style.copyWith(
+                    color: Color(0xFF26648E), fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget signUpUi() {
+    return Column(
+      children: <Widget>[
+        SizedBox(height: 15.0),
+        TextField(
+          style: style,
+          controller: nome,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.account_circle),
+              fillColor: Color(0xFFFFFFFF),
+              filled: true,
+              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+              hintText: "Nome",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+        ),
+        SizedBox(height: 15.0),
+        TextField(
+          style: style,
+          keyboardType: TextInputType.emailAddress,
+          controller: email,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.email),
+              fillColor: Color(0xFFFFFFFF),
+              filled: true,
+              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+              hintText: "Email",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+        ),
+        SizedBox(height: 15.0),
+        TextField(
+          obscureText: true,
+          style: style,
+          controller: senha,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.lock),
+              fillColor: Color(0xFFFFFFFF),
+              filled: true,
+              contentPadding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 20.0),
+              hintText: "Senha",
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(5.0))),
+        ),
+        SizedBox(height: 15.0),
+        DropdownButton(
+          isExpanded: true,
+            items: tipos.map((String item) {
+              return DropdownMenuItem<String>(
+                value: item,
+                child: Text(item),
+              );
+            } ).toList(),
+            onChanged: (String valor) {
+              setState(() {
+                this.dropdownValue = valor;
+                if (valor == 'Locatário'){
+                  this.dropdownNumber = 1;
+                }
+                else {
+                  this.dropdownNumber = 2;
+                }
+              });
+            },
+            value: dropdownValue,
+            ),
+        SizedBox(height: 15.0),
+        Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(5.0),
+          color: Color(0xFFFFE3B3),
+          child: MaterialButton(
+              minWidth: MediaQuery.of(context).size.width,
+              padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
+              onPressed: () {
+                registerUser();
+              },
+              child:  Text("Cadastrar",
+                      textAlign: TextAlign.center,
+                      style: style.copyWith(
+                          color: Color(0xFF26648E),
+                          fontWeight: FontWeight.bold)),
+        ),)
+      ],
+    );
   }
 }
