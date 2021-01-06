@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:rent_app/pages/componentes/listas.dart';
+import 'package:rent_app/pages/interessse.dart';
 
 class ImovelPage extends StatefulWidget {
   final String id;
@@ -13,6 +13,7 @@ class ImovelPage extends StatefulWidget {
   final String aluguel;
   final String condominio;
   final String bairro;
+  final String localizacao;
 
   const ImovelPage(
       {Key key,
@@ -25,7 +26,8 @@ class ImovelPage extends StatefulWidget {
       this.vaga,
       this.aluguel,
       this.condominio,
-      this.bairro})
+      this.bairro,
+      this.localizacao})
       : super(key: key);
 
   @override
@@ -33,6 +35,7 @@ class ImovelPage extends StatefulWidget {
 }
 
 class _ImovelPageState extends State<ImovelPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(body: getBody());
@@ -60,7 +63,10 @@ class _ImovelPageState extends State<ImovelPage> {
               },
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Icon(Icons.arrow_back),
+                child: Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.yellow,
+                ),
               )),
         ),
         SizedBox(height: 10),
@@ -82,6 +88,12 @@ class _ImovelPageState extends State<ImovelPage> {
                 fontSize: 28,
                 color: Colors.blue[900],
                 fontWeight: FontWeight.bold)),
+        Text(widget.localizacao,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.indigo,
+            )),
         Text(widget.bairro,
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -115,11 +127,15 @@ class _ImovelPageState extends State<ImovelPage> {
             minWidth: MediaQuery.of(context).size.width,
             padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
             onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (_) => TenhoInteresse()));
             },
             child: Text("Tenho interesse",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 19,color: Color(0xFF26648E), fontWeight: FontWeight.bold)),
+                    fontSize: 19,
+                    color: Color(0xFF26648E),
+                    fontWeight: FontWeight.bold)),
           ),
         ),
       ]),

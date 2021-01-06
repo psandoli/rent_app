@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController nome = new TextEditingController();
 
   String dropdownValue = 'Locatário';
-  int dropdownNumber = 0;
+  int dropdownNumber = 1;
   var tipos = ['Locatário', 'Locador'];
 
   bool signin = true;
@@ -103,19 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
       "senha": senha.text,
     });
 
-    print(response.body);
-    var data = json.decode(response.body);
-
-    if (data == "Erro!") {
-      Fluttertoast.showToast(
-          msg: "Cadastro inexistente",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (email.text == "" || senha.text == "") {
+    if (email.text.isEmpty || senha.text.isEmpty) {
       Fluttertoast.showToast(
           msg: "Por favor preencha os campos",
           toastLength: Toast.LENGTH_SHORT,
@@ -124,25 +112,43 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-    } else if (data == "Sucesso!") {
-      Fluttertoast.showToast(
-          msg: "Login OK",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.green,
-          textColor: Colors.white,
-          fontSize: 16.0);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
-      Fluttertoast.showToast(
-          msg: "Usuário ou senha incorreto",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      print(response.body);
+      var data = json.decode(response.body);
+
+      if (data == "Erro!") {
+        Fluttertoast.showToast(
+            msg: "Cadastro inexistente",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      } else if (data == "Sucesso!") {
+        Fluttertoast.showToast(
+            msg: "Login OK",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.green,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        List user = [
+          {"login": email.text, "tipo": 1}
+        ];
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => HomePage()));
+      } else {
+        Fluttertoast.showToast(
+            msg: "Usuário ou senha incorreto",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     }
   }
 
@@ -152,22 +158,13 @@ class _MyHomePageState extends State<MyHomePage> {
       "nome": nome.text,
       "email": email.text,
       "senha": senha.text,
-      "tipo": dropdownNumber,
+      "tipo": dropdownNumber.toString(),
     });
 
     print(response.body);
     var data = json.decode(response.body);
 
-    if (email.text == "" || senha.text == "" || nome.text == ""){
-      Fluttertoast.showToast(
-          msg: "Por favor preencha os campos",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.red,
-          textColor: Colors.white,
-          fontSize: 16.0);
-    } else if (data == "Conta já existe.") {
+    if (data == "CJE") {
       Fluttertoast.showToast(
           msg: "Conta já existe",
           toastLength: Toast.LENGTH_SHORT,
@@ -176,8 +173,8 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-    } else if (data == "true") {
-        Fluttertoast.showToast(
+    } else if (data == "sucesso") {
+      Fluttertoast.showToast(
           msg: "Conta criada.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
@@ -185,8 +182,12 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0);
-      } else if (data == "false"){
-        Fluttertoast.showToast(
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => super.widget));
+    } else {
+      Fluttertoast.showToast(
           msg: "Erro.",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
@@ -194,8 +195,8 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0);
-      }
     }
+  }
 
   @override
   void initState() {
@@ -404,43 +405,74 @@ class _MyHomePageState extends State<MyHomePage> {
         SizedBox(height: 15.0),
         DropdownButton(
           isExpanded: true,
-            items: tipos.map((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item),
-              );
-            } ).toList(),
-            onChanged: (String valor) {
-              setState(() {
-                this.dropdownValue = valor;
-                if (valor == 'Locatário'){
-                  this.dropdownNumber = 1;
-                }
-                else {
-                  this.dropdownNumber = 2;
-                }
-              });
-            },
-            value: dropdownValue,
-            ),
+          items: tipos.map((String item) {
+            return DropdownMenuItem<String>(
+              value: item,
+              child: Text(item),
+            );
+          }).toList(),
+          onChanged: (String valor) {
+            setState(() {
+              this.dropdownValue = valor;
+              if (valor == 'Locatário') {
+                this.dropdownNumber = 1;
+              } else {
+                this.dropdownNumber = 2;
+              }
+            });
+          },
+          value: dropdownValue,
+        ),
         SizedBox(height: 15.0),
         Material(
           elevation: 5.0,
           borderRadius: BorderRadius.circular(5.0),
           color: Color(0xFFFFE3B3),
           child: MaterialButton(
-              minWidth: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
-              onPressed: () {
-                registerUser();
-              },
-              child:  Text("Cadastrar",
-                      textAlign: TextAlign.center,
-                      style: style.copyWith(
-                          color: Color(0xFF26648E),
-                          fontWeight: FontWeight.bold)),
-        ),)
+            minWidth: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.fromLTRB(20.0, 25.0, 20.0, 25.0),
+            onPressed: () {
+              print("Nome" + nome.text);
+              print(email.text);
+              print(senha.text);
+              print(dropdownNumber.toString());
+              if (email.text.isEmpty ||
+                  senha.text.isEmpty ||
+                  nome.text.isEmpty) {
+                Fluttertoast.showToast(
+                    msg: "Por favor preencha os campos",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+              } else {
+              registerUser();
+              }
+            },
+            child: Text("CADASTRAR",
+                textAlign: TextAlign.center,
+                style: style.copyWith(
+                    color: Color(0xFF26648E), fontWeight: FontWeight.bold)),
+          ),
+        )
       ],
     );
   }
 }
+
+List lista = [
+  {
+    "id": 0,
+    "nome": "",
+    "img": "",
+    "tamanho": "",
+    "quarto": "",
+    "banheiro": "",
+    "vaga": "",
+    "aluguel": "",
+    "condominio": "",
+    "bairro": ""
+  }
+];

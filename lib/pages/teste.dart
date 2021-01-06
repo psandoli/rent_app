@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
-import 'componentes/listas.dart';
-import 'imovel.dart';
+import 'package:flutter/material.dart';
+import 'package:rent_app/pages/componentes/imovel.dart';
+import 'package:rent_app/pages/meusImoveis.dart';
+import 'imovelDetalhes.dart';
+import 'package:http/http.dart' as http;
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -10,8 +14,33 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int ativo = 0;
+
+  List<Imovel> imoveis = List<Imovel>();
+
+  Future<List<Imovel>> getDataImovel() async {
+    String url = "http://192.168.0.113/flutter/consultarImovel.php";
+    var response = await http.get(url);
+
+    var imovel2 = List<Imovel>();
+
+    if(response.statusCode == 200){
+      var notesJson = json.decode(response.body);
+      for (var noteJason in notesJson){
+        imovel2.add(Imovel.fromJson(noteJason));
+      }
+    }
+    imoveis=imovel2;
+    return imovel2;
+  }
+
   @override
   Widget build(BuildContext context) {
+    getDataImovel().then((value) {
+      setState(() {
+        imoveis.addAll(value);
+      });
+    });
+    
     return Scaffold(
       appBar: _appBar(),
       body: _body(),
@@ -21,6 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body() {
     var size = MediaQuery.of(context).size;
+
     return SafeArea(
         child: ListView(
       children: <Widget>[
@@ -53,7 +83,8 @@ class _HomePageState extends State<HomePage> {
                 splashColor: Colors.blue[200],
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0)),
-                onPressed: () {},
+                onPressed: () {
+                },
                 label: Text('Filtrar',
                     style:
                         TextStyle(fontSize: 20, color: Colors.lightBlue[900])),
@@ -61,55 +92,23 @@ class _HomePageState extends State<HomePage> {
             ]),
           )
         ])),
-        Row(
-          children: List.generate(tiposImovel.length, (index) {
-            return InkWell(
-                onTap: () {
-                  setState(() {
-                    ativo == index;
-                  });
-                },
-                child: Container(
-                    padding:
-                        EdgeInsets.only(top: 8, bottom: 8, right: 34, left: 32),
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: [0.4, 0.9],
-                          colors: [
-                            Color(0xFF26648E),
-                            Color(0xFF53D2DC),
-                          ],
-                        ),
-                        border: Border(
-                            bottom: BorderSide(
-                                color: ativo == index
-                                    ? Colors.yellow
-                                    : Colors.transparent,
-                                width: 2))),
-                    child: Text(
-                      tiposImovel[index],
-                      style: TextStyle(fontSize: 17, color: Colors.black),
-                    )));
-          }),
-        ),
         SizedBox(height: 15),
         Wrap(
-            children: List.generate(dataItems.length, (index) {
+            children: List.generate(imoveis.length, (index) {
           return InkWell(
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => ImovelPage(
-              id: dataItems[index]['id'].toString(),
-              nome: dataItems[index]['nome'],
-              img: dataItems[index]['img'],
-              tamanho: dataItems[index]['tamanho'].toString(),
-              quarto: dataItems[index]['quarto'].toString(),
-              banheiro: dataItems[index]['banheiro'].toString(),
-              vaga: dataItems[index]['vaga'].toString(),
-              aluguel: dataItems[index]['aluguel'].toString(),
-              condominio: dataItems[index]['condominio'].toString(),
-              bairro: dataItems[index]['bairro'],
+              id: imoveis[index].id.toString(),
+              nome: imoveis[index].nome,
+              img: imoveis[index].img,
+              tamanho: imoveis[index].tamanho.toString(),
+              quarto: imoveis[index].quarto.toString(),
+              banheiro: imoveis[index].banheiro.toString(),
+              vaga: imoveis[index].vaga.toString(),
+              aluguel: imoveis[index].aluguel.toString(),
+              condominio: imoveis[index].condominio.toString(),
+              bairro: imoveis[index].bairro,
+              localizacao: imoveis[index].localizacao,
               )));
             },
             child: Card(
@@ -117,29 +116,29 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 children: <Widget>[
                   Hero(
-                    tag: dataItems[index]['id'].toString(),
+                    tag: imoveis[index].id.toString(),
                     child: Container(
                     width: (size.width - 16)/2,
                     height: (size.width - 16)/2,
                     decoration: BoxDecoration(
                         image: DecorationImage(
-                            image: AssetImage(dataItems[index]['img']),
+                            image: AssetImage(imoveis[index].img),
                             fit: BoxFit.cover)),
                   ),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    dataItems[index]['nome'],
+                    imoveis[index].nome,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    dataItems[index]['bairro'],
+                    imoveis[index].bairro,
                     style: TextStyle(color: Colors.grey),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "R\$ " + dataItems[index]['aluguel'].toString(),
+                    "R\$ " + imoveis[index].aluguel.toString(),
                     style: TextStyle(
                         color: Colors.blue[900],
                         fontWeight: FontWeight.bold,
@@ -150,7 +149,7 @@ class _HomePageState extends State<HomePage> {
               )
           );
         })),
-         SizedBox(height: 20),
+        SizedBox(height: 20),
       ],
     ));
   }
@@ -166,13 +165,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         ListTile(
-          title: Text('Imóveis'),
-          leading: Icon(Icons.house_rounded),
-          //onTap: () => Navigator.pop(context),
-        ),
-        ListTile(
-          title: Text('Meu perfil'),
-          leading: Icon(Icons.account_circle),
+          title: Text('Meus imóveis'),
+          leading: Icon(Icons.house_outlined),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MeusImoveis())),
         ),
       ],
     ),
@@ -209,4 +204,3 @@ AppBar _appBar() {
 }
 
 }
-
