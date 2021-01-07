@@ -15,5 +15,7 @@ $results = mysqli_query($connect, $query);
 
 if ($results>0){
     echo json_encode("success");
+} else {
+    echo json_encode("error");
 }
 ?>

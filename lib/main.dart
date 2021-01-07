@@ -44,34 +44,9 @@ class MyApp extends StatelessWidget {
         body: SafeArea(
           child: MyHomePage(),
         ),
-        drawer: _drawer(),
       ),
     );
   }
-}
-
-Widget _drawer() {
-  return Drawer(
-    child: ListView(
-      children: <Widget>[
-        DrawerHeader(
-          child: Text('Menu'),
-          decoration: BoxDecoration(
-            color: Colors.cyan,
-          ),
-        ),
-        /*ListTile(
-          title: Text('Imóveis'),
-          leading: Icon(Icons.house_rounded),
-          //onTap: () => Navigator.pop(context),
-        ),
-        ListTile(
-          title: Text('Meu perfil'),
-          leading: Icon(Icons.account_circle),
-        )*/
-      ],
-    ),
-  );
 }
 
 class MyHomePage extends StatefulWidget {

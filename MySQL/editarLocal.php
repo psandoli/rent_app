@@ -2,7 +2,7 @@
 include "conexao.php";
 
 	$id = $_POST['id'];
-        $nome = $_POST['nome'];
+    $nome = $_POST['nome'];
 
 	$query = "UPDATE `localizacao` SET nome = '$nome' WHERE id = $id";
 

@@ -2,7 +2,7 @@
 include "conexao.php";
 
 	$id = $_POST['id'];
-        $nome = $_POST['nome'];
+    $nome = $_POST['nome'];
 	$tamanho = $_POST['tamanho'];
 	$quarto = $_POST['quarto'];
 	$banheiro = $_POST['banheiro'];

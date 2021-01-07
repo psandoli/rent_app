@@ -56,7 +56,7 @@ class _NovoImovelState extends State<NovoImovel> {
           context, MaterialPageRoute(builder: (context) => MeusImoveis()));
     } else {
       Fluttertoast.showToast(
-          msg: "Erro.",
+          msg: "error",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
