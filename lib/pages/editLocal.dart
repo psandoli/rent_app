@@ -33,7 +33,7 @@ class _EditLocalState extends State<EditLocal> {
   }
 
   Future editLocal() async {
-    var url = "http://192.168.0.113/flutter/editarLocal.php";
+    var url = "http://192.168.0.114/flutter/editarLocal.php";
     var response = await http.post(url, body: {
       "id": widget.id.toString(),
       "nome": nome.text,

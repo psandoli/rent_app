@@ -1,6 +1,7 @@
 <?php
 include "conexao.php";
 
+$img = $_FILES['img']['name'];
 $nome = $_POST['nome'];
 $tamanho = $_POST['tamanho'];
 $quarto = $_POST['quarto'];
@@ -10,7 +11,12 @@ $aluguel = $_POST['aluguel'];
 $condominio = $_POST['condominio'];
 $bairro = $_POST['bairro'];
 
-$query = "INSERT INTO `imovel`(`nome`, `tamanho`, `quarto`, `banheiro`, `vaga`, `aluguel`, `condominio`, `bairro`) VALUES ('$nome', '$tamanho', '$quarto', '$banheiro', '$vaga', '$aluguel', '$condominio', '$bairro')";
+$imagePath = 'upload/'.$img;
+$tmp_name = $_FILES['img']['tmp_name'];
+
+move_uploaded_file($tmp_name, $imagePath);
+
+$query = "INSERT INTO `imovel`(`nome`, `img`, `tamanho`, `quarto`, `banheiro`, `vaga`, `aluguel`, `condominio`, `bairro`) VALUES ('$nome', '$img', '$tamanho', '$quarto', '$banheiro', '$vaga', '$aluguel', '$condominio', '$bairro')";
 $results = mysqli_query($connect, $query);
 
 if ($results>0){

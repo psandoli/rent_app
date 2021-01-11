@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rent_app/pages/localizacao.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
 
 import 'meusImoveis.dart';
 
@@ -21,6 +23,16 @@ class _NovoImovelState extends State<NovoImovel> {
   TextEditingController aluguel = new TextEditingController();
   TextEditingController condo = new TextEditingController();
 
+  File _image;
+  final picker = ImagePicker();
+
+  Future choiceImage() async {
+    var pickedImage = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _image = File(pickedImage.path);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,21 +41,21 @@ class _NovoImovelState extends State<NovoImovel> {
   }
 
   Future registerImovel() async {
-    var url = "http://192.168.0.113/flutter/cadastrarImovel.php";
-    var response = await http.post(url, body: {
-      "nome": tipo.text,
-      "tamanho": area.text,
-      "quarto": quar.text,
-      "banheiro": banhe.text,
-      "vaga": vaga.text,
-      "aluguel": aluguel.text,
-      "condominio": condo.text,
-      "bairro": bairro.text,
-    });
+    final uri = Uri.parse("http://192.168.0.114/flutter/cadastrarImovel2.php");
+    var request = http.MultipartRequest('POST', uri);
+    request.fields['nome'] = tipo.text;
+    request.fields['tamanho']= area.text;
+    request.fields['quarto']= quar.text;
+    request.fields['banheiro']= banhe.text;
+    request.fields['vaga']= vaga.text;
+    request.fields['aluguel']= aluguel.text;
+    request.fields['condominio']= condo.text;
+    request.fields['bairro']= bairro.text;
+    var pic = await http.MultipartFile.fromPath("img", _image.path);
+    request.files.add(pic);
+    var response = await request.send();
 
-    var data = json.decode(response.body);
-
-    if (data == "success") {
+    if (response.statusCode == 200){
       Fluttertoast.showToast(
           msg: "Imóvel criado.",
           toastLength: Toast.LENGTH_SHORT,
@@ -56,7 +68,7 @@ class _NovoImovelState extends State<NovoImovel> {
           context, MaterialPageRoute(builder: (context) => MeusImoveis()));
     } else {
       Fluttertoast.showToast(
-          msg: "error",
+          msg: "Erro ao cadastrar imóvel",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -105,56 +117,25 @@ class _NovoImovelState extends State<NovoImovel> {
                       ),
                       SizedBox(height: 50),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Material(
                             elevation: 5.0,
                             borderRadius: BorderRadius.circular(5.0),
                             color: Colors.yellow,
-                            child: MaterialButton(
+                            child: _image == null ? MaterialButton(
                               height: 12,
                               minWidth: 12,
                               padding:
                                   EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.arrow_back_ios_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 123),
-                          Material(
-                            elevation: 5.0,
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.yellow,
-                            child: MaterialButton(
-                              height: 12,
-                              minWidth: 12,
-                              padding:
-                                  EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
+                              onPressed: () {
+                                choiceImage();
+                              },
                               child: Icon(
                                 Icons.add,
                                 color: Colors.blue,
                               ),
-                            ),
-                          ),
-                          SizedBox(width: 123),
-                          Material(
-                            elevation: 5.0,
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.yellow,
-                            child: MaterialButton(
-                              height: 12,
-                              minWidth: 12,
-                              padding:
-                                  EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
+                            ) : Image.file(_image),
                           ),
                         ],
                       ),

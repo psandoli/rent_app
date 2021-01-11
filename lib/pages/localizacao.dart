@@ -16,7 +16,7 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
   List<Localizacao> local = List<Localizacao>();
 
   Future<List<Localizacao>> getDataLocal() async {
-    String url = "http://192.168.0.113/flutter/consultarLocal.php";
+    String url = "http://192.168.0.114/flutter/consultarLocal.php";
     var response = await http.get(url);
 
     var local2 = List<Localizacao>();
@@ -133,7 +133,7 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
                                 ),
                                 onPressed: () {
                                   setState(() {
-                                    var url = "http://192.168.0.113/flutter/deletarLocal.php";
+                                    var url = "http://192.168.0.114/flutter/deletarLocal.php";
                                   http.post(url, body: {
                                   "id": local[index].id.toString(),
                                   });

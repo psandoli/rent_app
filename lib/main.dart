@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool signin = true;
 
   Future senddata() async {
-    var url = "http://192.168.0.113/flutter/autenticar.php";
+    var url = "http://192.168.0.114/flutter/autenticar.php";
     var response = await http.post(url, body: {
       "email": email.text,
       "senha": senha.text,
@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future registerUser() async {
-    var url = "http://192.168.0.113/flutter/cadastrar.php";
+    var url = "http://192.168.0.114/flutter/cadastrar.php";
     var response = await http.post(url, body: {
       "nome": nome.text,
       "email": email.text,
@@ -436,18 +436,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-List lista = [
-  {
-    "id": 0,
-    "nome": "",
-    "img": "",
-    "tamanho": "",
-    "quarto": "",
-    "banheiro": "",
-    "vaga": "",
-    "aluguel": "",
-    "condominio": "",
-    "bairro": ""
-  }
-];

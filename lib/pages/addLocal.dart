@@ -20,7 +20,7 @@ class _addLocalState extends State<addLocal> {
   }
 
   Future registerLocal() async {
-    var url = "http://192.168.0.113/flutter/cadastrarLocal.php";
+    var url = "http://192.168.0.114/flutter/cadastrarLocal.php";
     var response = await http.post(url, body: {
       "nome": nome.text,
     });

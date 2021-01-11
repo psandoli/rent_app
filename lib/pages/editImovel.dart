@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:rent_app/pages/localizacao.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -24,6 +27,16 @@ class _EditImovelState extends State<EditImovel> {
   TextEditingController aluguel = new TextEditingController();
   TextEditingController condo = new TextEditingController();
 
+  File _image;
+  final picker = ImagePicker();
+
+  Future choiceImage() async {
+    var pickedImage = await picker.getImage(source: ImageSource.gallery);
+    setState(() {
+      _image = File(pickedImage.path);
+    });
+  }
+
   @override
   void initState() {
     if (widget.index != null) {
@@ -46,22 +59,23 @@ class _EditImovelState extends State<EditImovel> {
   }
 
   Future editImovel() async {
-    var url = "http://192.168.0.113/flutter/editarImovel.php";
-    var response = await http.post(url, body: {
-      "id": widget.list[widget.index].id.toString(),
-      "nome": tipo.text,
-      "tamanho": area.text,
-      "quarto": quar.text,
-      "banheiro": banhe.text,
-      "vaga": vaga.text,
-      "aluguel": aluguel.text,
-      "condominio": condo.text,
-      "bairro": bairro.text,
-    });
+    final url = Uri.parse("http://192.168.0.114/flutter/editarImovel.php") ;
+    var request = http.MultipartRequest('POST', url);
+    request.fields['id'] = widget.list[widget.index].id.toString();
+    request.fields['nome'] = tipo.text;
+    request.fields['tamanho']= area.text;
+    request.fields['quarto']= quar.text;
+    request.fields['banheiro']= banhe.text;
+    request.fields['vaga']= vaga.text;
+    request.fields['aluguel']= aluguel.text;
+    request.fields['condominio']= condo.text;
+    request.fields['bairro']= bairro.text;
+    var pic = await http.MultipartFile.fromPath("img", _image.path);
+    request.files.add(pic);
+    var response = await request.send();
+    
 
-    var data = json.decode(response.body);
-
-    if (data == "success") {
+    if (response.statusCode == 200){
       Fluttertoast.showToast(
           msg: "Imóvel atualizado.",
           toastLength: Toast.LENGTH_SHORT,
@@ -70,11 +84,11 @@ class _EditImovelState extends State<EditImovel> {
           backgroundColor: Colors.green,
           textColor: Colors.white,
           fontSize: 16.0);
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (BuildContext context) => super.widget));
-    } else if (data == "error") {
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => MeusImoveis()));
+    } else {
       Fluttertoast.showToast(
-          msg: "Erro.",
+          msg: "Erro ao atualizar imóvel",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
@@ -123,56 +137,25 @@ class _EditImovelState extends State<EditImovel> {
                       ),
                       SizedBox(height: 50),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Material(
                             elevation: 5.0,
                             borderRadius: BorderRadius.circular(5.0),
                             color: Colors.yellow,
-                            child: MaterialButton(
+                            child: _image == null ? MaterialButton(
                               height: 12,
                               minWidth: 12,
                               padding:
                                   EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.arrow_back_ios_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 123),
-                          Material(
-                            elevation: 5.0,
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.yellow,
-                            child: MaterialButton(
-                              height: 12,
-                              minWidth: 12,
-                              padding:
-                                  EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
+                              onPressed: () {
+                                choiceImage();
+                              },
                               child: Icon(
                                 Icons.add,
                                 color: Colors.blue,
                               ),
-                            ),
-                          ),
-                          SizedBox(width: 123),
-                          Material(
-                            elevation: 5.0,
-                            borderRadius: BorderRadius.circular(5.0),
-                            color: Colors.yellow,
-                            child: MaterialButton(
-                              height: 12,
-                              minWidth: 12,
-                              padding:
-                                  EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                              onPressed: () {},
-                              child: Icon(
-                                Icons.arrow_forward_ios_outlined,
-                                color: Colors.blue,
-                              ),
-                            ),
+                            ) : Image.file(_image),
                           ),
                         ],
                       ),
@@ -352,7 +335,7 @@ class _EditImovelState extends State<EditImovel> {
                                 onPressed: () {
                                   setState(() {
                                     var url =
-                                        "http://192.168.0.113/flutter/deletarImovel.php";
+                                        "http://192.168.0.114/flutter/deletarImovel.php";
                                     http.post(url, body: {
                                       "id": widget.list[widget.index].id
                                           .toString(),

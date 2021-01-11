@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:rent_app/main.dart';
 import 'package:rent_app/pages/componentes/imovel.dart';
 import 'package:rent_app/pages/meusImoveis.dart';
 import 'imovelDetalhes.dart';
@@ -17,8 +18,8 @@ class _HomePageState extends State<HomePage> {
 
   List<Imovel> imoveis = List<Imovel>();
 
-  Future<List<Imovel>> getDataImovel() async {
-    String url = "http://192.168.0.113/flutter/consultarImovel.php";
+  getDataImovel() async {
+    String url = "http://192.168.0.114/flutter/consultarImovel.php";
     var response = await http.get(url);
 
     var imovel2 = List<Imovel>();
@@ -30,7 +31,6 @@ class _HomePageState extends State<HomePage> {
       }
     }
     imoveis=imovel2;
-    return imovel2;
   }
 
   @override
@@ -161,14 +161,27 @@ class _HomePageState extends State<HomePage> {
         DrawerHeader(
           child: Text('Menu'),
           decoration: BoxDecoration(
-            color: Colors.cyan,
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            stops: [0.4, 0.9],
+            colors: [
+              Color(0xFF26648E),
+              Color(0xFF53D2DC),
+            ],
           ),
+        )
         ),
         ListTile(
           title: Text('Meus imóveis'),
           leading: Icon(Icons.house_outlined),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MeusImoveis())),
         ),
+        ListTile(
+          title: Text('Sair'),
+          leading: Icon(Icons.login_outlined),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MyApp())),
+        )
       ],
     ),
   );

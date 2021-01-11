@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:rent_app/pages/editImovel.dart';
-import 'package:rent_app/pages/novoImovel.dart';
+import 'package:rent_app/pages/addImovel.dart';
 import 'package:http/http.dart' as http;
 
 import 'componentes/imovel.dart';
@@ -16,7 +16,7 @@ class _MeusImoveisState extends State<MeusImoveis> {
   List<Imovel> imoveis = List<Imovel>();
 
   Future<List<Imovel>> getDataImovel() async {
-    String url = "http://192.168.0.113/flutter/consultarImovel.php";
+    String url = "http://192.168.0.114/flutter/consultarImovel.php";
     var response = await http.get(url);
 
     var imovel2 = List<Imovel>();
